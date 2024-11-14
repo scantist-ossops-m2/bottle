@@ -1110,8 +1110,7 @@ class BaseRequest(object):
             property holds the parsed content of the request body. Only requests
             smaller than :attr:`MEMFILE_MAX` are processed to avoid memory
             exhaustion. '''
-        ctype = self.environ.get('CONTENT_TYPE', '').lower().split(';')[0]
-        if ctype == 'application/json':
+        if 'application/json' in self.environ.get('CONTENT_TYPE', ''):
             return json_loads(self._get_body_string())
         return None
 
