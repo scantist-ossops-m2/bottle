@@ -16,7 +16,7 @@ License: MIT (see LICENSE for details)
 from __future__ import with_statement
 
 __author__ = 'Marcel Hellkamp'
-__version__ = '0.12.19'
+__version__ = '0.12.20'
 __license__ = 'MIT'
 
 # The gevent server adapter needs to patch some modules before they are imported
@@ -848,17 +848,19 @@ class Bottle(object):
         return tob(template(ERROR_PAGE_TEMPLATE, e=res))
 
     def _handle(self, environ):
-        path = environ['bottle.raw_path'] = environ['PATH_INFO']
-        if py3k:
-            try:
-                environ['PATH_INFO'] = path.encode('latin1').decode('utf8')
-            except UnicodeError:
-                return HTTPError(400, 'Invalid path string. Expected UTF-8')
-
         try:
+
             environ['bottle.app'] = self
             request.bind(environ)
             response.bind()
+
+            path = environ['bottle.raw_path'] = environ['PATH_INFO']
+            if py3k:
+                try:
+                    environ['PATH_INFO'] = path.encode('latin1').decode('utf8')
+                except UnicodeError:
+                    return HTTPError(400, 'Invalid path string. Expected UTF-8')
+
             try:
                 self.trigger_hook('before_request')
                 route, args = self.router.match(environ)
